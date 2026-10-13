@@ -130,9 +130,12 @@ def build(data, idx):
     cx = cx.sort_values("qe").drop_duplicates(["company", "cq"], keep="last")
     piv = cx.pivot(index="cq", columns="company", values="value")
     filed = cx.assign(rel=pd.to_datetime(cx["released"])).pivot(index="cq", columns="company", values="rel")
-    both = piv.notna() & piv.shift(4).notna()
-    capex_yoy = (piv.where(both).sum(axis=1) / piv.shift(4).where(both).sum(axis=1) - 1) * 100
-    capex_yoy[both.sum(axis=1) == 0] = np.nan
+    prev = piv.shift(4)
+    both = piv.notna() & prev.notna()
+    # 1년 전 값이 있는 회사가 모두 이번 분기를 공시해야 그 분기를 확정(일부 회사만으로 계산하지 않음)
+    complete = (piv.notna() | prev.isna()).all(axis=1)
+    capex_yoy = (piv.where(both).sum(axis=1) / prev.where(both).sum(axis=1) - 1) * 100
+    capex_yoy[(both.sum(axis=1) == 0) | ~complete] = np.nan
     capex_avail = filed.max(axis=1).dt.to_period("M")
     put("hyperscaler_capex_yoy", quarterly_to_monthly(capex_yoy, capex_avail, idx),
         str(capex_yoy.dropna().index[-1]) if capex_yoy.notna().any() else None,

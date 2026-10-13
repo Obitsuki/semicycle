@@ -3,41 +3,514 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>반도체 업황 사이클</title>
+<title>메모리 반도체 업황 사이클</title>
+<meta name="description" content="공개 통계로 매일 갱신하는 메모리 반도체 업황의 사이클 위치(회복·확장·둔화·수축).">
+<meta property="og:title" content="메모리 반도체 업황 사이클">
+<meta property="og:description" content="지금 메모리 업황은 회복·확장·둔화·수축 중 어디에 있을까.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='1' width='14' height='14' fill='none' stroke='%231c1e21' stroke-width='1.5'/%3E%3Cpath d='M8 1v14M1 8h14' stroke='%231c1e21' stroke-width='1'/%3E%3Ccircle cx='11.5' cy='4.5' r='2.2' fill='%232350b4'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-  :root { --bg:#fafaf8; --fg:#1d1d1b; --muted:#6b6b66; --line:#e3e2dc; --accent:#2f5d8a; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141413; --fg:#eceae4; --muted:#9a988f; --line:#2c2b28; --accent:#8db3d9; } }
+  :root {
+    --bg: #ffffff;
+    --ink: #1c1e21;
+    --ink-2: #4a4f55;
+    --muted: #7c8289;
+    --line: #e6e8eb;
+    --soft: #f4f5f7;
+    --accent: #2350b4;
+    --accent-wash: #edf2fc;
+    --series-2: #a3a9b0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17191c;
+      --ink: #e9ebee;
+      --ink-2: #b9bec5;
+      --muted: #8d939a;
+      --line: #2c3035;
+      --soft: #1f2226;
+      --accent: #86a8ec;
+      --accent-wash: #1d2535;
+      --series-2: #646a72;
+    }
+  }
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
-  main { max-width:720px; margin:0 auto; padding:48px 16px; }
-  h1 { font-size:15px; font-weight:600; color:var(--muted); margin:0 0 24px; letter-spacing:.02em; }
-  .phase { font-size:56px; font-weight:700; line-height:1.1; margin:0; }
-  .asof { color:var(--muted); margin:6px 0 32px; }
-  .scores { display:flex; gap:32px; border-top:1px solid var(--line); padding-top:20px; }
-  .scores div span { display:block; color:var(--muted); font-size:13px; }
-  .scores div b { font-size:28px; font-variant-numeric:tabular-nums; }
-  p.note { color:var(--muted); font-size:13px; margin-top:40px; border-top:1px solid var(--line); padding-top:16px; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere;
+  }
+  a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:hover { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+
+  header.top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 28px 0 0; color: var(--ink-2); font-size: 14px; }
+  header.top b { color: var(--ink); font-weight: 600; }
+
+  /* 첫 화면: 국면 + 사이클 시계 */
+  .hero { display: grid; grid-template-columns: 1fr 360px; gap: 48px; align-items: center; padding: 56px 0 64px; border-bottom: 1px solid var(--line); }
+  .phase { font-size: clamp(64px, 11vw, 104px); font-weight: 700; letter-spacing: -0.035em; line-height: 1; margin: 0 0 20px; }
+  .lede { font-size: 20px; line-height: 1.55; margin: 0 0 28px; max-width: 26em; }
+  .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 440px; }
+  .score b { display: block; font-size: 40px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.1; }
+  .score span { display: block; font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .score p { margin: 6px 0 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+  .next { margin: 28px 0 0; color: var(--ink-2); font-size: 15px; max-width: 30em; }
+
+  .clock { position: relative; width: 100%; max-width: 360px; justify-self: end; }
+  .clock svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .clock figcaption { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+  h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 8px; }
+  .sub { color: var(--ink-2); margin: 0 0 28px; max-width: 40em; }
+
+  /* 영역별 점수 */
+  .pillars { width: 100%; max-width: 680px; border-collapse: collapse; }
+  .pillars th { text-align: left; font-weight: 500; font-size: 13px; color: var(--muted); padding: 0 0 8px; }
+  .pillars td { padding: 11px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+  .pillars td.name { width: 30%; font-weight: 600; }
+  .pillars td.name small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+  .bar { display: flex; align-items: center; gap: 10px; padding-right: 20px; }
+  .bar i { position: relative; display: block; flex: 1; height: 6px; background: var(--soft); border-radius: 3px; }
+  .bar i::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--muted); opacity: .6; }
+  .bar i u { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); border-radius: 0 3px 3px 0; text-decoration: none; }
+  .bar em { font-style: normal; font-variant-numeric: tabular-nums; width: 2.2em; text-align: right; font-size: 15px; }
+
+  /* 과거 흐름 */
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .legend { display: flex; gap: 20px; font-size: 14px; color: var(--ink-2); margin: 0 0 12px; }
+  .legend span::before { content: ""; display: inline-block; width: 16px; height: 2px; vertical-align: middle; margin-right: 6px; background: var(--k); }
+  .legend span.area::before { height: 12px; width: 14px; background: var(--accent-wash); vertical-align: -1px; }
+
+  /* 검증 표 */
+  table.data { width: 100%; max-width: 680px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  table.data th { text-align: right; font-weight: 500; font-size: 13px; color: var(--muted); padding: 0 0 8px 12px; vertical-align: bottom; }
+  table.data th:first-child, table.data td:first-child { text-align: left; padding-left: 0; }
+  table.data td { text-align: right; padding: 10px 0 10px 12px; border-top: 1px solid var(--line); }
+  table.data tr.now td { font-weight: 650; }
+  table.data tr.now td:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 12px; }
+  .note { color: var(--muted); font-size: 13px; margin: 14px 0 0; max-width: 46em; }
+
+  details { margin-top: 28px; max-width: 920px; }
+  summary { cursor: pointer; font-weight: 600; width: fit-content; }
+  details[open] summary { margin-bottom: 16px; }
+  .scroll { overflow-x: auto; }
+  table.inds { min-width: 640px; }
+  table.inds td:first-child small { display: block; color: var(--muted); font-size: 13px; font-weight: 400; max-width: 26em; line-height: 1.45; margin-top: 2px; }
+  table.inds td { vertical-align: top; }
+  table.inds th, table.inds td:not(:first-child) { white-space: nowrap; }
+  table.inds td:nth-child(3) { white-space: normal; min-width: 7em; max-width: 12em; }
+
+  .method p { max-width: 40em; margin: 0 0 14px; }
+  footer { color: var(--muted); font-size: 13px; padding: 40px 0 56px; border-top: 1px solid var(--line); }
+  footer p { margin: 0 0 8px; max-width: 52em; }
+
+  .tip { position: absolute; pointer-events: none; background: var(--bg); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,.08); padding: 8px 10px; font-size: 13px; line-height: 1.5; white-space: nowrap; z-index: 2; display: none; }
+  .tip b { font-weight: 650; }
+  .tip .k { display: inline-block; width: 12px; height: 2px; vertical-align: middle; margin-right: 6px; }
+
+  .err { padding: 80px 0; font-size: 18px; }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 0 48px; }
+    .clock { justify-self: start; }
+    .lede { font-size: 18px; }
+    .score b { font-size: 34px; }
+    section { padding: 44px 0; }
+    .pillars td.name { width: 34%; }
+    .bar { padding-right: 10px; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>메모리 반도체 업황 사이클 위치</h1>
-  <p class="phase" id="phase">불러오는 중…</p>
-  <p class="asof" id="asof"></p>
-  <div class="scores">
-    <div><span>수준</span><b id="level">–</b></div>
-    <div><span>방향</span><b id="direction">–</b></div>
-  </div>
-  <p class="note" id="note">사이트 준비 중입니다.</p>
-</main>
+<div class="wrap">
+  <header class="top">
+    <b>메모리 반도체 업황 사이클</b>
+    <span id="updated"></span>
+  </header>
+
+  <main id="app">
+    <div class="hero">
+      <div>
+        <p class="phase" id="phase">&nbsp;</p>
+        <p class="lede" id="lede">데이터를 불러오는 중입니다.</p>
+        <div class="scores">
+          <div class="score"><span>수준</span><b id="level">–</b><p>지금 업황이 과거와 비교해 얼마나 좋은지. 50이 과거의 중간입니다.</p></div>
+          <div class="score"><span>방향</span><b id="direction">–</b><p>업황이 좋아지는 중인지. 50 이상이면 좋아지는 중입니다.</p></div>
+        </div>
+        <p class="next" id="next"></p>
+      </div>
+      <figure class="clock" id="clock" style="margin:0">
+        <figcaption id="clock-cap"></figcaption>
+      </figure>
+    </div>
+
+    <section>
+      <h2>영역별 점수</h2>
+      <p class="sub">다섯 영역의 점수를 가중 평균해 수준과 방향을 냅니다. 막대의 가운데 눈금이 50입니다.</p>
+      <table class="pillars" id="pillars">
+        <thead><tr><th></th><th>수준</th><th>방향</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <details>
+        <summary>인자 11개 자세히 보기</summary>
+        <div class="scroll">
+          <table class="data inds" id="inds">
+            <thead><tr><th>인자</th><th>최근 값</th><th>데이터 기준</th><th>수준</th><th>방향</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="note">수준·방향은 각 인자의 과거 이력 대비 위치(0~100)입니다. 재고처럼 높을수록 업황에 나쁜 인자는 뒤집어 계산합니다. 빈칸은 그 점수에 쓰지 않는 인자입니다.</p>
+      </details>
+    </section>
+
+    <section>
+      <h2>2004년 이후 흐름</h2>
+      <p class="sub">선은 업황 수준, 옅게 칠한 기간은 업황이 좋아지던 달(방향 50 이상)입니다. 칠한 기간에 선이 50 위면 확장, 아래면 회복입니다.</p>
+      <div class="legend"><span style="--k: var(--ink)">수준</span><span class="area">좋아지던 달</span></div>
+      <div class="chart" id="history"></div>
+    </section>
+
+    <section>
+      <h2>과거 판정은 얼마나 맞았나</h2>
+      <p class="sub" id="valid-sub"></p>
+      <table class="data" id="valid">
+        <thead><tr><th>판정</th><th>개월 수</th><th>이후 6개월<br>가격 상승률 변화</th><th>가격 흐름이<br>좋아진 비율</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="note" id="valid-note"></p>
+    </section>
+
+    <section class="method">
+      <h2>계산 방법</h2>
+      <p>가격·물량·재고·이익·수요 다섯 영역에서 공개 통계 11개를 씁니다. 각 값을 그 시점까지의 자기 과거 이력과 비교해 0~100 위치로 바꾸고, 영역별로 평균한 뒤 가중 합산합니다(가격 25, 물량 25, 재고 20, 이익 15, 수요 15).</p>
+      <p>수준은 증가율 자체를, 방향은 증가율의 3개월 변화를 씁니다. 모든 값은 실제로 공개된 시점 이후에만 반영하고, 매일 오전 7시에 새로 발표된 데이터를 확인해 다시 계산합니다.</p>
+      <p>한계도 있습니다. HBM처럼 공개 가격이 없는 제품의 흐름은 직접 반영하지 못하고, 이 점수로 주가를 예측하는 것은 2021년 이후 작동하지 않았습니다.</p>
+      <p><a href="https://github.com/Obitsuki/semicycle">코드와 데이터 보기 (GitHub)</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p id="disclaimer">업황의 위치를 보여줄 뿐, 주가 방향을 예측하거나 투자를 권유하지 않습니다.</p>
+    <p id="sources"></p>
+  </footer>
+</div>
+<div class="tip" id="tip" role="status"></div>
+
 <script>
-fetch("data/latest.json").then(r => r.json()).then(d => {
-  document.getElementById("phase").textContent = d.phase_name;
-  document.getElementById("asof").textContent = d.as_of + " 기준";
-  document.getElementById("level").textContent = d.level;
-  document.getElementById("direction").textContent = d.direction;
-  document.getElementById("note").textContent = d.disclaimer + " 사이트 준비 중입니다.";
-}).catch(() => { document.getElementById("phase").textContent = "데이터를 불러오지 못했습니다"; });
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var ORDER = ["recovery", "expansion", "slowdown", "contraction"];
+  var NAME = { recovery: "회복", expansion: "확장", slowdown: "둔화", contraction: "수축" };
+  var LEDE = {
+    recovery: "업황은 아직 과거 평균보다 나쁘지만, 좋아지기 시작했습니다.",
+    expansion: "업황이 과거 평균보다 좋고, 계속 좋아지고 있습니다.",
+    slowdown: "업황은 아직 과거 평균보다 좋지만, 나빠지기 시작했습니다.",
+    contraction: "업황이 과거 평균보다 나쁘고, 계속 나빠지고 있습니다."
+  };
+  // 시계 방향 다음 국면과 그 기준
+  var NEXT = {
+    recovery: { to: "expansion", axis: "수준", key: "level", up: true },
+    expansion: { to: "slowdown", axis: "방향", key: "direction", up: false },
+    slowdown: { to: "contraction", axis: "수준", key: "level", up: false },
+    contraction: { to: "recovery", axis: "방향", key: "direction", up: true }
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function sv(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function round(x) { return x == null ? "–" : String(Math.round(x)); }
+  function ym(s, short) {
+    var p = s.split("-");
+    return short ? p[0].slice(2) + "." + p[1] : p[0] + "년 " + Number(p[1]) + "월";
+  }
+  // 받침에 따라 '으로'/'로'
+  function ro(word) {
+    var c = word.charCodeAt(word.length - 1) - 0xac00;
+    if (c < 0 || c > 11171) return "로";
+    var j = c % 28;
+    return j === 0 || j === 8 ? "로" : "으로";
+  }
+  function signed(x, unit) { return x == null ? "–" : (x > 0 ? "+" : "") + x.toFixed(1) + unit; }
+
+  var tip = $("tip");
+  function showTip(host, x, y, rows) {
+    tip.textContent = "";
+    rows.forEach(function (r, i) {
+      var line = el("div");
+      if (r.key) { var k = el("span", { class: "k" }); k.style.background = r.key; line.appendChild(k); }
+      if (r.strong != null) { line.appendChild(el("b", null, r.strong)); line.appendChild(document.createTextNode(" " + (r.text || ""))); }
+      else line.textContent = r.text;
+      tip.appendChild(line);
+    });
+    tip.style.display = "block";
+    var box = host.getBoundingClientRect();
+    var left = window.scrollX + box.left + x + 14, top = window.scrollY + box.top + y - 10;
+    var w = tip.offsetWidth;
+    if (left + w > window.scrollX + document.documentElement.clientWidth - 8) left -= w + 28;
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function hideTip() { tip.style.display = "none"; }
+
+  // ---------- 사이클 시계 ----------
+  function halo(t, color) {
+    t.setAttribute("stroke", color); t.setAttribute("stroke-width", 5);
+    t.setAttribute("stroke-linejoin", "round"); t.setAttribute("paint-order", "stroke");
+    return t;
+  }
+  function drawClock(h, latest) {
+    var fig = $("clock"), N = 24;
+    var n = h.months.length, from = Math.max(0, n - N);
+    var S = 300, P = 30, W = S + P * 2;
+    var x = function (v) { return P + v / 100 * S; };
+    var y = function (v) { return P + (100 - v) / 100 * S; };
+    var svg = sv("svg", { viewBox: "0 0 " + W + " " + W, role: "img",
+      "aria-label": "사이클 시계: 가로축 수준, 세로축 방향. 최근 " + (n - from) + "개월 이동 경로와 현재 위치. 지금은 " + latest.phase_name });
+    var q = { recovery: [0, 50], expansion: [50, 50], slowdown: [50, 0], contraction: [0, 0] };
+    var now = latest.phase, cq = q[now];
+    // 현재 국면 칸만 옅게 칠한다
+    svg.appendChild(sv("rect", { x: x(cq[0]), y: y(cq[1] + 50), width: S / 2, height: S / 2, fill: "var(--accent-wash)" }));
+    svg.appendChild(sv("rect", { x: P, y: P, width: S, height: S, fill: "none", stroke: "var(--line)" }));
+    svg.appendChild(sv("line", { x1: x(50), y1: P, x2: x(50), y2: P + S, stroke: "var(--line)" }));
+    svg.appendChild(sv("line", { x1: P, y1: y(50), x2: P + S, y2: y(50), stroke: "var(--line)" }));
+    function label(tx, ty, str, anchor, rot) {
+      var t = sv("text", { x: tx, y: ty, "font-size": 12, fill: "var(--muted)", "text-anchor": anchor || "middle" });
+      if (rot) t.setAttribute("transform", "rotate(-90 " + tx + " " + ty + ")");
+      t.textContent = str; svg.appendChild(t);
+    }
+    label(P, P + S + 20, "나쁨", "start"); label(P + S, P + S + 20, "좋음", "end"); label(x(50), P + S + 20, "수준");
+    label(P - 6, P + 10, "개선", "end"); label(P - 6, y(50) + 4, "방향", "end"); label(P - 6, P + S, "악화", "end");
+
+    // 이동 경로
+    var pts = [];
+    for (var i = from; i < n; i++) if (h.level[i] != null && h.direction[i] != null) pts.push(i);
+    var d = pts.map(function (i, k) { return (k ? "L" : "M") + x(h.level[i]).toFixed(1) + " " + y(h.direction[i]).toFixed(1); }).join("");
+    svg.appendChild(sv("path", { d: d, fill: "none", stroke: "var(--series-2)", "stroke-width": 1.5, "stroke-linejoin": "round" }));
+    pts.slice(0, -1).forEach(function (i) {
+      svg.appendChild(sv("circle", { cx: x(h.level[i]), cy: y(h.direction[i]), r: 2.5, fill: "var(--series-2)", stroke: "var(--bg)", "stroke-width": 1.5 }));
+    });
+
+    // 국면 이름은 경로 위에, 배경색 테두리를 둘러 겹쳐도 읽히게
+    ORDER.forEach(function (ph) {
+      var c = q[ph], left = c[0] === 0, top = c[1] === 50;
+      var t = sv("text", { x: left ? P + 12 : P + S - 12, y: top ? P + 26 : P + S - 14,
+        "text-anchor": left ? "start" : "end", "font-size": 17, "font-weight": ph === now ? 700 : 500,
+        fill: ph === now ? "var(--ink)" : "var(--muted)" });
+      t.textContent = NAME[ph];
+      svg.appendChild(halo(t, ph === now ? "var(--accent-wash)" : "var(--bg)"));
+    });
+    var a = pts[0], b = pts[pts.length - 1];
+    var start = sv("text", { x: x(h.level[a]) + 8, y: y(h.direction[a]) + 4, "font-size": 12, fill: "var(--ink-2)" });
+    start.textContent = ym(h.months[a], true);
+    svg.appendChild(halo(start, q[h.phase[a]] === cq ? "var(--accent-wash)" : "var(--bg)"));
+
+    // 현재 위치는 맨 위에
+    var bx = x(h.level[b]), by = y(h.direction[b]);
+    svg.appendChild(sv("circle", { cx: bx, cy: by, r: 6.5, fill: "var(--accent)", stroke: "var(--bg)", "stroke-width": 2 }));
+    var nowT = sv("text", { x: bx - 12, y: by + 5, "font-size": 13, "font-weight": 600, fill: "var(--ink)", "text-anchor": "end" });
+    nowT.textContent = "지금";
+    svg.appendChild(halo(nowT, "var(--accent-wash)"));
+
+    // 마우스를 올리면 그 달의 값
+    pts.forEach(function (i) {
+      var hit = sv("circle", { cx: x(h.level[i]), cy: y(h.direction[i]), r: 9, fill: "transparent" });
+      hit.addEventListener("pointerenter", function () {
+        var r = svg.getBoundingClientRect(), sc = r.width / W;
+        showTip(fig, x(h.level[i]) * sc, y(h.direction[i]) * sc, [
+          { strong: ym(h.months[i]), text: NAME[h.phase[i]] },
+          { text: "수준 " + h.level[i].toFixed(1) + ", 방향 " + h.direction[i].toFixed(1) }]);
+      });
+      hit.addEventListener("pointerleave", hideTip);
+      svg.appendChild(hit);
+    });
+    fig.insertBefore(svg, fig.firstChild);
+    $("clock-cap").textContent = ym(h.months[a]) + "부터 " + pts.length + "개월 동안의 이동 경로입니다. 업황은 보통 시계 방향(회복 → 확장 → 둔화 → 수축)으로 돕니다.";
+  }
+
+  // ---------- 과거 흐름: 수준 선 + 좋아지던 달 배경 ----------
+  function drawHistory(h) {
+    var host = $("history");
+    host.textContent = "";
+    var W = Math.max(300, Math.round(host.clientWidth)), narrow = W < 560;
+    var H = narrow ? 220 : 260, L = 28, R = narrow ? 40 : 56, T = 10, B = 28;
+    var n = h.months.length;
+    var x = function (i) { return L + i / (n - 1) * (W - L - R); };
+    var y = function (v) { return T + (100 - v) / 100 * (H - T - B); };
+    var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img",
+      "aria-label": "2004년 이후 업황 수준 점수 추이와 업황이 좋아지던 달" });
+    // 좋아지던 달(방향 50 이상)을 연속 구간으로 묶어 칠한다
+    var bw = (W - L - R) / (n - 1), run = null;
+    for (var i = 0; i <= n; i++) {
+      var up = i < n && h.direction[i] != null && h.direction[i] >= 50;
+      if (up && run === null) run = i;
+      if (!up && run !== null) {
+        svg.appendChild(sv("rect", { x: Math.max(L, x(run) - bw / 2), y: T, width: Math.min(W - R, x(i - 1) + bw / 2) - Math.max(L, x(run) - bw / 2), height: H - T - B, fill: "var(--accent-wash)" }));
+        run = null;
+      }
+    }
+    [0, 50, 100].forEach(function (v) {
+      svg.appendChild(sv("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--line)" }));
+      var t = sv("text", { x: L - 8, y: y(v) + 4, "font-size": 12, fill: "var(--muted)", "text-anchor": "end" });
+      t.textContent = v; svg.appendChild(t);
+    });
+    var step = narrow ? 6 : 4;
+    for (var j = 0; j < n; j++) {
+      var m = h.months[j];
+      if (m.slice(5) === "01" && Number(m.slice(0, 4)) % step === 0) {
+        var t = sv("text", { x: x(j), y: H - 6, "font-size": 12, fill: "var(--muted)", "text-anchor": "middle" });
+        t.textContent = m.slice(0, 4); svg.appendChild(t);
+      }
+    }
+    var d = "", pen = false;
+    h.level.forEach(function (v, k) {
+      if (v == null) { pen = false; return; }
+      d += (pen ? "L" : "M") + x(k).toFixed(1) + " " + y(v).toFixed(1); pen = true;
+    });
+    svg.appendChild(sv("path", { d: d, fill: "none", stroke: "var(--ink)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    var lv = h.level[n - 1];
+    svg.appendChild(sv("circle", { cx: x(n - 1), cy: y(lv), r: 4.5, fill: "var(--accent)", stroke: "var(--bg)", "stroke-width": 2 }));
+    var endT = sv("text", { x: x(n - 1) + 10, y: y(lv) + 4, "font-size": 12, fill: "var(--ink)" });
+    endT.textContent = round(lv); svg.appendChild(endT);
+    // 십자선과 툴팁
+    var cross = sv("line", { y1: T, y2: H - B, stroke: "var(--muted)", "stroke-width": 1, opacity: 0 });
+    svg.appendChild(cross);
+    var hit = sv("rect", { x: L, y: T, width: W - L - R, height: H - T - B, fill: "transparent" });
+    svg.appendChild(hit);
+    hit.addEventListener("pointermove", function (ev) {
+      var r = svg.getBoundingClientRect(), sc = r.width / W;
+      var px = (ev.clientX - r.left) / sc;
+      var k = Math.max(0, Math.min(n - 1, Math.round((px - L) / (W - L - R) * (n - 1))));
+      cross.setAttribute("x1", x(k)); cross.setAttribute("x2", x(k)); cross.setAttribute("opacity", 0.6);
+      showTip(host, x(k) * sc, ev.clientY - r.top, [
+        { strong: ym(h.months[k]), text: NAME[h.phase[k]] },
+        { text: "수준 " + h.level[k].toFixed(1) + ", 방향 " + h.direction[k].toFixed(1) }]);
+    });
+    hit.addEventListener("pointerleave", function () { cross.setAttribute("opacity", 0); hideTip(); });
+    host.appendChild(svg);
+  }
+
+  // ---------- 영역별 점수 ----------
+  function bar(v) {
+    var td = el("td"), b = el("div", { class: "bar" }), i = el("i"), u = el("u");
+    u.style.width = Math.max(0, Math.min(100, v || 0)) + "%";
+    i.appendChild(u); b.appendChild(i); b.appendChild(el("em", null, round(v))); td.appendChild(b);
+    return td;
+  }
+  var PILLAR_NOTE = { price: "메모리 수출물가", volume: "수출·마이크론 매출", inventory: "출하 대비 재고·재고일수",
+    earnings: "메모리 기업 마진", demand: "빅테크 투자·장비 수입·미국 주문" };
+  function drawPillars(latest) {
+    var tb = $("pillars").querySelector("tbody");
+    latest.pillars.forEach(function (p) {
+      var tr = el("tr"), name = el("td", { class: "name" }, p.name);
+      name.appendChild(el("small", null, PILLAR_NOTE[p.id] || ""));
+      tr.appendChild(name); tr.appendChild(bar(p.level)); tr.appendChild(bar(p.direction));
+      tb.appendChild(tr);
+    });
+  }
+  function fmtValue(ind) {
+    if (ind.value == null) return "–";
+    var u = ind.unit.indexOf("%p") === 0 ? "%p" : ind.unit.indexOf("%") === 0 ? "%" : ind.unit.indexOf("일") === 0 ? "일" : "";
+    return (ind.value > 0 ? "+" : "") + ind.value.toFixed(1) + u;
+  }
+  // '2026-08' → '2026.08', '2026-09-03' → '2026.09', '2026Q2' → '2026년 2분기'
+  function fmtPeriod(p) {
+    if (!p) return "–";
+    return p.replace(/(\d{4})-(\d{2})-\d{2}/g, "$1.$2").replace(/(\d{4})-(\d{2})/g, "$1.$2")
+            .replace(/(\d{4})Q(\d)/g, "$1년 $2분기").replace(/MU /g, "마이크론 ");
+  }
+  function drawIndicators(latest) {
+    var tb = $("inds").querySelector("tbody");
+    latest.indicators.forEach(function (ind) {
+      var tr = el("tr"), name = el("td", null, ind.name);
+      name.appendChild(el("small", null, ind.description));
+      tr.appendChild(name);
+      tr.appendChild(el("td", null, fmtValue(ind)));
+      tr.appendChild(el("td", null, fmtPeriod(ind.data_period)));
+      tr.appendChild(el("td", null, round(ind.level_pct)));
+      tr.appendChild(el("td", null, round(ind.direction_pct)));
+      tb.appendChild(tr);
+    });
+  }
+
+  // ---------- 검증 ----------
+  function drawValidation(v, latest) {
+    var all = v.periods.all, tb = $("valid").querySelector("tbody");
+    $("valid-sub").textContent = ym(all.from) + "부터 " + ym(all.to) + "까지 매달의 판정 뒤, 6개월 동안 메모리 수출물가 상승률이 실제로 어떻게 변했는지입니다.";
+    all.rows.forEach(function (r) {
+      var tr = el("tr", r.phase === latest.phase ? { class: "now" } : null);
+      tr.appendChild(el("td", null, r.phase_name + (r.phase === latest.phase ? " (지금)" : "")));
+      tr.appendChild(el("td", null, String(r.months)));
+      tr.appendChild(el("td", null, signed(r.mean_change_pp, "%p")));
+      tr.appendChild(el("td", null, r.share_improved_pct == null ? "–" : r.share_improved_pct + "%"));
+      tb.appendChild(tr);
+    });
+    var recent = v.periods.since_2021.rows.filter(function (r) { return r.phase === latest.phase; })[0];
+    $("valid-note").textContent = "판정 당시에는 알 수 없던 이후 6개월의 실제 가격으로 확인한 결과입니다."
+      + (recent && recent.months ? " 2021년 이후만 보면 '" + recent.phase_name + "' " + recent.months + "개월 뒤 평균 " + signed(recent.mean_change_pp, "%p") + "였습니다." : "");
+  }
+
+  function render(latest, h, v) {
+    var gen = new Date(latest.generated_at);
+    $("updated").textContent = (gen.getMonth() + 1) + "월 " + gen.getDate() + "일 갱신";
+    $("phase").textContent = latest.phase_name;
+    $("lede").textContent = LEDE[latest.phase];
+    $("level").textContent = round(latest.level);
+    $("direction").textContent = round(latest.direction);
+    var nx = NEXT[latest.phase], cur = latest[nx.key];
+    var three = latest.previous && latest.previous[1];
+    var trend = "";
+    if (three) {
+      var a = Math.round(three.direction), b = Math.round(latest.direction);
+      trend = "방향 점수는 3개월 전 " + a + "점에서 " + b + "점으로 " + (b < a ? "내려왔습니다. " : b > a ? "올라왔습니다. " : "그대로입니다. ");
+    }
+    $("next").textContent = trend + nx.axis + " 점수가 50 " + (nx.up ? "이상으로 올라가면" : "아래로 내려가면") + " '" + NAME[nx.to] + "'" + ro(NAME[nx.to]) + " 바뀝니다.";
+    document.title = "메모리 반도체 업황: " + latest.phase_name + " (" + ym(latest.as_of) + ")";
+    drawClock(h, latest);
+    drawPillars(latest);
+    drawIndicators(latest);
+    drawHistory(h);
+    var lastW = $("history").clientWidth, timer;
+    window.addEventListener("resize", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        if (Math.abs($("history").clientWidth - lastW) > 8) { lastW = $("history").clientWidth; hideTip(); drawHistory(h); }
+      }, 150);
+    });
+    drawValidation(v, latest);
+    $("disclaimer").textContent = latest.disclaimer;
+    var src = $("sources");
+    src.appendChild(document.createTextNode("데이터: "));
+    latest.sources.forEach(function (s, i) {
+      if (i) src.appendChild(document.createTextNode(", "));
+      src.appendChild(el("a", { href: s.url }, s.name));
+    });
+  }
+
+  Promise.all(["latest", "history", "validation"].map(function (n) {
+    return fetch("data/" + n + ".json", { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error(n); return r.json();
+    });
+  })).then(function (d) { render(d[0], d[1], d[2]); })
+    .catch(function () {
+      $("app").innerHTML = "";
+      $("app").appendChild(el("p", { class: "err" }, "데이터를 불러오지 못했습니다. 잠시 후 새로고침해 주세요."));
+    });
+})();
 </script>
 </body>
 </html>
