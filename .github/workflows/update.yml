@@ -1,0 +1,75 @@
+name: update
+
+on:
+  schedule:
+    - cron: "17 22 * * *"   # 매일 07:17 KST
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 테스트
+        run: python -m pytest -q tests
+
+      - name: 수집·계산·발행
+        if: github.event_name != 'push'
+        env:
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python run.py
+
+      - name: 계산·발행(코드 변경 시, 수집 없이)
+        if: github.event_name == 'push'
+        run: python run.py --skip-fetch
+
+      - name: 수집 데이터 커밋
+        if: github.event_name != 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if ! git diff --cached --quiet; then
+            git commit -m "data: $(date -u +%F) 자동 갱신"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5
+
+      - name: 갱신 지연 점검
+        if: github.event_name != 'push'
+        run: python run.py --health

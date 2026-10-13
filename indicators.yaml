@@ -1,0 +1,161 @@
+# 반도체(메모리) 업황 사이클 위치 — 인자 정의
+# 계산 코드(semicycle/indicators.py)와 사이트 방법론 설명이 모두 이 파일을 읽는다.
+#
+# lag_months : 기준월(M) 데이터가 공개되는 시점(M+lag) 가정. 분기 공시 자료는 공시일 기준.
+# roles      : level(지금 업황이 얼마나 좋은가) / direction(좋아지는 중인가)에 쓰이는 형태
+#              growth  = 성장률 수준을 level에, 성장률의 3개월 변화를 direction에 사용
+#              change  = 그 자체가 변화량이라 level·direction 모두 같은 값 사용
+#              accel   = direction 전용(가격 가속도)
+# sign       : +1 높을수록 업황 좋음, -1 높을수록 업황 나쁨
+
+settings:
+  history_start: "2000-01"
+  min_history_months: 36       # 백분위 계산에 필요한 최소 이력
+  carry_forward_months: 3      # 다음 발표 전까지 마지막 공개값 유지 기간
+  min_weight_coverage: 0.6     # 필러 가중치 기준 데이터 커버리지가 이보다 낮으면 점수 미산출
+  direction_window_months: 3
+
+pillars:
+  - {id: price,     name: 가격,      weight: 25}
+  - {id: volume,    name: 물량·매출, weight: 25}
+  - {id: inventory, name: 재고,      weight: 20}
+  - {id: earnings,  name: 이익,      weight: 15}
+  - {id: demand,    name: 수요,      weight: 15}
+
+phases:
+  - {id: recovery,    name: 회복, rule: "수준 < 50, 방향 ≥ 50"}
+  - {id: expansion,   name: 확장, rule: "수준 ≥ 50, 방향 ≥ 50"}
+  - {id: slowdown,    name: 둔화, rule: "수준 ≥ 50, 방향 < 50"}
+  - {id: contraction, name: 수축, rule: "수준 < 50, 방향 < 50"}
+
+indicators:
+  - id: price_yoy
+    name: 메모리 수출물가 상승률
+    pillar: price
+    role: level_only
+    sign: 1
+    lag_months: 1
+    unit: "% YoY"
+    description: 한국은행 D램·플래시메모리 수출물가지수(달러 기준)를 품목 가중치(103.4:29.8)로 합성한 전년 대비 상승률
+    sources: [ecos]
+
+  - id: price_accel
+    name: 메모리 수출물가 가속도
+    pillar: price
+    role: accel
+    sign: 1
+    lag_months: 1
+    unit: "%p (3개월 변화)"
+    description: 메모리 수출물가 상승률의 3개월 변화. 가격 상승 속도가 빨라지는지 둔해지는지
+    sources: [ecos]
+
+  - id: ic_export_yoy
+    name: 집적회로 수출 증가율
+    pillar: volume
+    role: growth
+    sign: 1
+    lag_months: 1
+    unit: "% YoY (3개월 합)"
+    description: 관세청 집적회로(HS 8542) 수출액 3개월 합계의 전년 대비 증가율. 산업부 발표 '반도체'(MTI 기준)와 범위가 달라 금액 수준은 다르다
+    sources: [customs]
+
+  - id: micron_rev_yoy
+    name: 마이크론 매출 증가율
+    pillar: volume
+    role: growth
+    sign: 1
+    unit: "% YoY"
+    description: 마이크론 분기 매출의 전년 동기 대비 증가율. 분기 종료 다음 달 실적 발표 기준으로 반영
+    sources: [sec]
+
+  - id: ship_inv_gap
+    name: 반도체 출하−재고 증가율 갭
+    pillar: inventory
+    role: change
+    sign: 1
+    lag_months: 2
+    unit: "%p"
+    description: 반도체 제조업 출하지수 증가율에서 재고지수 증가율을 뺀 값(계절조정). 양수면 재고가 줄어드는 국면
+    sources: [kosis]
+
+  - id: inventory_days_chg
+    name: 메모리 기업 재고일수 변화
+    pillar: inventory
+    role: change
+    sign: -1
+    unit: "일 (전년 대비)"
+    description: 마이크론·SK하이닉스 재고자산 ÷ 분기 매출원가 × 91의 전년 대비 변화 평균. 높을수록 재고 부담
+    sources: [sec, dart]
+
+  - id: memory_margin_chg
+    name: 메모리 기업 마진 변화
+    pillar: earnings
+    role: growth
+    sign: 1
+    unit: "%p (전년 대비)"
+    description: 마이크론 매출총이익률과 SK하이닉스 영업이익률의 전년 동기 대비 변화 평균
+    sources: [sec, dart]
+
+  - id: samsung_opm_chg
+    name: 삼성전자 영업이익률 변화
+    pillar: earnings
+    role: growth
+    sign: 1
+    unit: "%p (전년 대비)"
+    description: 삼성전자 연결 영업이익률(전사 기준, 반도체 부문 아님)의 전년 동기 대비 변화
+    sources: [dart]
+
+  - id: hyperscaler_capex_yoy
+    name: 하이퍼스케일러 설비투자 증가율
+    pillar: demand
+    role: growth
+    sign: 1
+    unit: "% YoY"
+    description: 마이크로소프트·알파벳·아마존·메타·오라클의 분기 설비투자(유형자산 취득) 합계 전년 대비 증가율. 다섯 곳 공시가 모두 나온 달에 반영
+    sources: [sec]
+
+  - id: equipment_import_yoy
+    name: 반도체 장비 수입 증가율
+    pillar: demand
+    role: growth
+    sign: 1
+    lag_months: 1
+    unit: "% YoY (3개월 합)"
+    description: 관세청 반도체 제조장비(HS 8486) 수입액 3개월 합계의 전년 대비 증가율
+    sources: [customs]
+
+  - id: us_orders_inv_ratio_yoy
+    name: 미국 전자제품 주문/재고 비율
+    pillar: demand
+    role: growth
+    sign: 1
+    lag_months: 2
+    unit: "% YoY"
+    description: 미국 컴퓨터·전자제품 제조업 신규주문 ÷ 재고 비율의 전년 대비 변화(미 인구조사국 M3)
+    sources: [fred]
+
+sources:
+  ecos:
+    name: 한국은행 경제통계시스템(ECOS)
+    url: https://ecos.bok.or.kr
+    detail: 수출물가지수(품목별) 402Y016 — D램 30911201AA, 플래시메모리 30911202AA, 달러 기준
+  customs:
+    name: 관세청 품목별 국가별 수출입실적
+    url: https://www.data.go.kr/data/15100475/openapi.do
+    detail: HS 8542(집적회로) 수출, HS 8486(반도체 제조장비) 수입
+  kosis:
+    name: 통계청 광업제조업동향조사(KOSIS)
+    url: https://kosis.kr
+    detail: DT_1F02001 반도체 제조업(C261) 생산자제품 출하·재고지수(계절조정)
+  fred:
+    name: 미국 연준 FRED (U.S. Census Bureau M3)
+    url: https://fred.stlouisfed.org
+    detail: A34SNO(신규주문), A34STI(재고) — 컴퓨터·전자제품
+  sec:
+    name: 미국 SEC EDGAR XBRL
+    url: https://www.sec.gov/edgar
+    detail: 마이크론 매출·매출총이익·재고, 하이퍼스케일러 5사 설비투자
+  dart:
+    name: 금융감독원 OpenDART
+    url: https://opendart.fss.or.kr
+    detail: SK하이닉스·삼성전자 분기 연결재무제표

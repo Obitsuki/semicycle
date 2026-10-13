@@ -1,0 +1,53 @@
+{
+ "ecos": {
+  "error": null,
+  "last_attempt": "2026-10-13",
+  "last_success": "2026-10-13",
+  "latest_period": {
+   "ecos.dram_usd": "2026-08",
+   "ecos.flash_usd": "2026-08"
+  },
+  "new_or_revised": 640,
+  "rows": 640
+ },
+ "fred": {
+  "error": null,
+  "last_attempt": "2026-10-13",
+  "last_success": "2026-10-13",
+  "latest_period": {
+   "fred.A34SNO": "2026-08",
+   "fred.A34STI": "2026-08"
+  },
+  "new_or_revised": 831,
+  "rows": 831
+ },
+ "kosis": {
+  "error": null,
+  "last_attempt": "2026-10-13",
+  "last_success": "2026-10-13",
+  "latest_period": {
+   "kosis.semi_inv_sa": "2026-08",
+   "kosis.semi_ship_sa": "2026-08"
+  },
+  "new_or_revised": 1000,
+  "rows": 1000
+ },
+ "sec": {
+  "error": null,
+  "last_attempt": "2026-10-13",
+  "last_success": "2026-10-13",
+  "latest_period": {
+   "sec.AMZN.capex": "2026-06-30",
+   "sec.GOOGL.capex": "2026-06-30",
+   "sec.META.capex": "2026-06-30",
+   "sec.MSFT.capex": "2026-06-30",
+   "sec.MU.cogs": "2026-09-03",
+   "sec.MU.gross_profit": "2026-09-03",
+   "sec.MU.inventory": "2026-09-03",
+   "sec.MU.revenue": "2026-09-03",
+   "sec.ORCL.capex": "2026-08-31"
+  },
+  "new_or_revised": 616,
+  "rows": 616
+ }
+}

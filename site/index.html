@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반도체 업황 사이클</title>
+<style>
+  :root { --bg:#fafaf8; --fg:#1d1d1b; --muted:#6b6b66; --line:#e3e2dc; --accent:#2f5d8a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141413; --fg:#eceae4; --muted:#9a988f; --line:#2c2b28; --accent:#8db3d9; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+  main { max-width:720px; margin:0 auto; padding:48px 16px; }
+  h1 { font-size:15px; font-weight:600; color:var(--muted); margin:0 0 24px; letter-spacing:.02em; }
+  .phase { font-size:56px; font-weight:700; line-height:1.1; margin:0; }
+  .asof { color:var(--muted); margin:6px 0 32px; }
+  .scores { display:flex; gap:32px; border-top:1px solid var(--line); padding-top:20px; }
+  .scores div span { display:block; color:var(--muted); font-size:13px; }
+  .scores div b { font-size:28px; font-variant-numeric:tabular-nums; }
+  p.note { color:var(--muted); font-size:13px; margin-top:40px; border-top:1px solid var(--line); padding-top:16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>메모리 반도체 업황 사이클 위치</h1>
+  <p class="phase" id="phase">불러오는 중…</p>
+  <p class="asof" id="asof"></p>
+  <div class="scores">
+    <div><span>수준</span><b id="level">–</b></div>
+    <div><span>방향</span><b id="direction">–</b></div>
+  </div>
+  <p class="note" id="note">사이트 준비 중입니다.</p>
+</main>
+<script>
+fetch("data/latest.json").then(r => r.json()).then(d => {
+  document.getElementById("phase").textContent = d.phase_name;
+  document.getElementById("asof").textContent = d.as_of + " 기준";
+  document.getElementById("level").textContent = d.level;
+  document.getElementById("direction").textContent = d.direction;
+  document.getElementById("note").textContent = d.disclaimer + " 사이트 준비 중입니다.";
+}).catch(() => { document.getElementById("phase").textContent = "데이터를 불러오지 못했습니다"; });
+</script>
+</body>
+</html>
