@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   update:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # ubuntu-latest는 2026-10-19부터 Ubuntu 26으로 바뀜
     timeout-minutes: 60
     environment:
       name: github-pages
