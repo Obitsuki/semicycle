@@ -3984,3 +3984,5 @@ fetched_at,series,period,value,kind
 2026-10-13,dart.skhynix.revenue,2025Q4,32826653000000.0,backfill
 2026-10-13,dart.skhynix.revenue,2026Q1,52576287000000.0,backfill
 2026-10-13,dart.skhynix.revenue,2026Q2,79318746000000.0,backfill
+2026-10-16,ecos.dram_usd,2026-09,289.16,new
+2026-10-16,ecos.flash_usd,2026-09,245.72,new
