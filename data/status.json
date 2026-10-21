@@ -1,8 +1,8 @@
 {
  "customs": {
   "error": null,
-  "last_attempt": "2026-10-20",
-  "last_success": "2026-10-20",
+  "last_attempt": "2026-10-21",
+  "last_success": "2026-10-21",
   "latest_period": {
    "customs.equip_import_usd": "2026-09",
    "customs.ic_export_usd": "2026-09"
@@ -12,8 +12,8 @@
  },
  "dart": {
   "error": null,
-  "last_attempt": "2026-10-20",
-  "last_success": "2026-10-20",
+  "last_attempt": "2026-10-21",
+  "last_success": "2026-10-21",
   "latest_period": {
    "dart.samsung.cogs": "2026Q2",
    "dart.samsung.equity_parent": "2026Q2",
@@ -31,8 +31,8 @@
  },
  "ecos": {
   "error": null,
-  "last_attempt": "2026-10-20",
-  "last_success": "2026-10-20",
+  "last_attempt": "2026-10-21",
+  "last_success": "2026-10-21",
   "latest_period": {
    "ecos.dram_usd": "2026-09",
    "ecos.flash_usd": "2026-09"
@@ -42,8 +42,8 @@
  },
  "fred": {
   "error": null,
-  "last_attempt": "2026-10-20",
-  "last_success": "2026-10-20",
+  "last_attempt": "2026-10-21",
+  "last_success": "2026-10-21",
   "latest_period": {
    "fred.A34SNO": "2026-08",
    "fred.A34STI": "2026-08"
@@ -52,8 +52,8 @@
   "rows": 831
  },
  "kosis": {
-  "error": null,
-  "last_attempt": "2026-10-20",
+  "error": "FetchError: https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey=***&itmId=T21&objL1=00&objL2=C261&format=json&jsonVD=Y&prdSe=M&startPrdDe=198501&endPrdDe=209912&orgId=101&tblId=DT_1F02001 -> URLError(TimeoutError('timed out'))",
+  "last_attempt": "2026-10-21",
   "last_success": "2026-10-20",
   "latest_period": {
    "kosis.semi_inv_sa": "2026-08",
@@ -64,8 +64,8 @@
  },
  "sec": {
   "error": null,
-  "last_attempt": "2026-10-20",
-  "last_success": "2026-10-20",
+  "last_attempt": "2026-10-21",
+  "last_success": "2026-10-21",
   "latest_period": {
    "sec.AMZN.capex": "2026-06-30",
    "sec.GOOGL.capex": "2026-06-30",
