@@ -3987,3 +3987,7 @@ fetched_at,series,period,value,kind
 2026-10-16,ecos.dram_usd,2026-09,289.16,new
 2026-10-16,ecos.flash_usd,2026-09,245.72,new
 2026-10-23,sec.META.capex,2026-09-30,33942000000,new
+2026-10-28,fred.A34SNO,2026-08,31012.0,revised
+2026-10-28,fred.A34SNO,2026-09,31256.0,new
+2026-10-28,fred.A34STI,2026-08,68841.0,revised
+2026-10-28,fred.A34STI,2026-09,69020.0,new
