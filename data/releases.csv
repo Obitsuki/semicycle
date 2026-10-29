@@ -3991,3 +3991,4 @@ fetched_at,series,period,value,kind
 2026-10-28,fred.A34SNO,2026-09,31256.0,new
 2026-10-28,fred.A34STI,2026-08,68841.0,revised
 2026-10-28,fred.A34STI,2026-09,69020.0,new
+2026-10-29,sec.MSFT.capex,2026-09-30,39367000000,new
