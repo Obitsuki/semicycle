@@ -3998,3 +3998,4 @@ fetched_at,series,period,value,kind
 2026-10-30,kosis.semi_ship_sa,2026-08,196.5,revised
 2026-10-30,kosis.semi_ship_sa,2026-09,198.6,new
 2026-10-30,sec.GOOGL.capex,2026-09-30,51355000000,new
+2026-10-31,sec.AMZN.capex,2026-09-30,77259000000,new
