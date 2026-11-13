@@ -4019,3 +4019,5 @@ fetched_at,series,period,value,kind
 2026-11-11,customs.ic_export_usd,2026-08,38236324812.0,revised
 2026-11-11,customs.ic_export_usd,2026-09,43117065239.0,revised
 2026-11-11,customs.ic_export_usd,2026-10,40020898731.0,new
+2026-11-13,ecos.dram_usd,2026-10,309.97,new
+2026-11-13,ecos.flash_usd,2026-10,263.51,new
