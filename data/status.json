@@ -1,8 +1,8 @@
 {
  "customs": {
   "error": null,
-  "last_attempt": "2026-11-16",
-  "last_success": "2026-11-16",
+  "last_attempt": "2026-11-17",
+  "last_success": "2026-11-17",
   "latest_period": {
    "customs.equip_import_usd": "2026-10",
    "customs.ic_export_usd": "2026-10"
@@ -12,27 +12,27 @@
  },
  "dart": {
   "error": null,
-  "last_attempt": "2026-11-16",
-  "last_success": "2026-11-16",
+  "last_attempt": "2026-11-17",
+  "last_success": "2026-11-17",
   "latest_period": {
-   "dart.samsung.cogs": "2026Q2",
-   "dart.samsung.equity_parent": "2026Q2",
-   "dart.samsung.inventory": "2026Q2",
-   "dart.samsung.op_income": "2026Q2",
-   "dart.samsung.revenue": "2026Q2",
-   "dart.skhynix.cogs": "2026Q2",
-   "dart.skhynix.equity_parent": "2026Q2",
-   "dart.skhynix.inventory": "2026Q2",
-   "dart.skhynix.op_income": "2026Q2",
-   "dart.skhynix.revenue": "2026Q2"
+   "dart.samsung.cogs": "2026Q3",
+   "dart.samsung.equity_parent": "2026Q3",
+   "dart.samsung.inventory": "2026Q3",
+   "dart.samsung.op_income": "2026Q3",
+   "dart.samsung.revenue": "2026Q3",
+   "dart.skhynix.cogs": "2026Q3",
+   "dart.skhynix.equity_parent": "2026Q3",
+   "dart.skhynix.inventory": "2026Q3",
+   "dart.skhynix.op_income": "2026Q3",
+   "dart.skhynix.revenue": "2026Q3"
   },
-  "new_or_revised": 0,
-  "rows": 424
+  "new_or_revised": 10,
+  "rows": 434
  },
  "ecos": {
   "error": null,
-  "last_attempt": "2026-11-16",
-  "last_success": "2026-11-16",
+  "last_attempt": "2026-11-17",
+  "last_success": "2026-11-17",
   "latest_period": {
    "ecos.dram_usd": "2026-10",
    "ecos.flash_usd": "2026-10"
@@ -42,8 +42,8 @@
  },
  "fred": {
   "error": null,
-  "last_attempt": "2026-11-16",
-  "last_success": "2026-11-16",
+  "last_attempt": "2026-11-17",
+  "last_success": "2026-11-17",
   "latest_period": {
    "fred.A34SNO": "2026-09",
    "fred.A34STI": "2026-09"
@@ -53,8 +53,8 @@
  },
  "kosis": {
   "error": null,
-  "last_attempt": "2026-11-16",
-  "last_success": "2026-11-16",
+  "last_attempt": "2026-11-17",
+  "last_success": "2026-11-17",
   "latest_period": {
    "kosis.semi_inv_sa": "2026-09",
    "kosis.semi_ship_sa": "2026-09"
@@ -64,8 +64,8 @@
  },
  "sec": {
   "error": null,
-  "last_attempt": "2026-11-16",
-  "last_success": "2026-11-16",
+  "last_attempt": "2026-11-17",
+  "last_success": "2026-11-17",
   "latest_period": {
    "sec.AMZN.capex": "2026-09-30",
    "sec.GOOGL.capex": "2026-09-30",

@@ -4021,3 +4021,13 @@ fetched_at,series,period,value,kind
 2026-11-11,customs.ic_export_usd,2026-10,40020898731.0,new
 2026-11-13,ecos.dram_usd,2026-10,309.97,new
 2026-11-13,ecos.flash_usd,2026-10,263.51,new
+2026-11-17,dart.samsung.cogs,2026Q3,59989357000000.0,new
+2026-11-17,dart.samsung.equity_parent,2026Q3,605443984000000.0,new
+2026-11-17,dart.samsung.inventory,2026Q3,71995171000000.0,new
+2026-11-17,dart.samsung.op_income,2026Q3,107440482000000.0,new
+2026-11-17,dart.samsung.revenue,2026Q3,195253209000000.0,new
+2026-11-17,dart.skhynix.cogs,2026Q3,14962547000000.0,new
+2026-11-17,dart.skhynix.equity_parent,2026Q3,308494939000000.0,new
+2026-11-17,dart.skhynix.inventory,2026Q3,19355772000000.0,new
+2026-11-17,dart.skhynix.op_income,2026Q3,83333818000000.0,new
+2026-11-17,dart.skhynix.revenue,2026Q3,104615483000000.0,new
