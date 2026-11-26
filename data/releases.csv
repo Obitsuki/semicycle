@@ -4031,3 +4031,7 @@ fetched_at,series,period,value,kind
 2026-11-17,dart.skhynix.inventory,2026Q3,19355772000000.0,new
 2026-11-17,dart.skhynix.op_income,2026Q3,83333818000000.0,new
 2026-11-17,dart.skhynix.revenue,2026Q3,104615483000000.0,new
+2026-11-26,fred.A34SNO,2026-09,31220.0,revised
+2026-11-26,fred.A34SNO,2026-10,31189.0,new
+2026-11-26,fred.A34STI,2026-09,69043.0,revised
+2026-11-26,fred.A34STI,2026-10,69056.0,new
